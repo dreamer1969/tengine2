@@ -120,6 +120,7 @@ static int infer_shape(ir_node_t* node)
         int out_dims[TE_MAX_SHAPE_DIM_NUM * 2];
         for (int i = 0; i < dim_len; i++)
         {
+            TLOG_DEBUG("%s %s %d i:%d axis:%d \n",__FILE__,__FUNCTION__,__LINE__,i,axis);
             if (i == axis)
             {
                 int slice_end = slice_param->end;

@@ -177,7 +177,7 @@ int set_ir_node_input_tensor(ir_node_t* node, int input_idx, ir_tensor_t* tensor
     if (input_idx >= node->input_num)
     {
 	if(node->node_type=="Slice")
-	fprintf(stdout,"function:%s@%d node->input_num:%d input_idx:%d \n",__FUNCTION__,__LINE__,node->input_num,input_idx);
+	TLOG_DEBUG("001-%s function:%s@%d node->input_num:%d input_idx:%d tensor_name:%s \n",__FILE__,__FUNCTION__,__LINE__,node->input_num,input_idx,tensor->name);
         int16_t* new_tensor = (int16_t*)sys_realloc(node->input_tensors, sizeof(int16_t) * (input_idx + 1));
 
         if (NULL == new_tensor)
@@ -195,7 +195,7 @@ int set_ir_node_input_tensor(ir_node_t* node, int input_idx, ir_tensor_t* tensor
     }
 
     if(node->node_type=="Slice")
-        fprintf(stdout,"function:%s@%d node->input_num:%d input_idx:%d \n",__FUNCTION__,__LINE__,node->input_num,input_idx);
+        TLOG_DEBUG("001-1-function:%s@%d node->input_num:%d input_idx:%d \n",__FUNCTION__,__LINE__,node->input_num,input_idx);
     node->input_tensors[input_idx] = tensor->index;
     if (set_ir_tensor_consumer(tensor, node->index) < 0)
     {

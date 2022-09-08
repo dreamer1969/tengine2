@@ -120,7 +120,7 @@ static void mem_pool_dump(struct mem_pool* mem_pool)
 {
     int block_number = get_vector_num(mem_pool->block_list);
 
-    TLOG_INFO("Tengine: Block number: %d align size: %d\n", block_number, mem_pool->align_size);
+    TLOG_INFO("-22-Tengine: Block number: %d align size: %d\n", block_number, mem_pool->align_size);
 
     for (int i = 0; i < block_number; i++)
     {

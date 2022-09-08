@@ -1,0 +1,1 @@
+/usr/bin/cc -g CMakeFiles/tm_mobilenet_ssd.dir/tm_mobilenet_ssd.c.o CMakeFiles/tm_mobilenet_ssd.dir/common/tengine_operations.c.o -o tm_mobilenet_ssd  -Wl,-rpath,/data/dreamer/code/Tengine/build/source: ../source/libtengine-lite.so -lm -ldl -lm -lpthread 

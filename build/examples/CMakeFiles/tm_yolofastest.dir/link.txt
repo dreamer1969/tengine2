@@ -1,0 +1,1 @@
+/usr/bin/c++ -g CMakeFiles/tm_yolofastest.dir/tm_yolofastest.cpp.o CMakeFiles/tm_yolofastest.dir/common/tengine_operations.c.o -o tm_yolofastest  -Wl,-rpath,/data/dreamer/code/Tengine/build/source: ../source/libtengine-lite.so -lm -ldl -lm -lpthread 

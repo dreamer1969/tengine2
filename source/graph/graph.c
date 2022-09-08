@@ -218,7 +218,8 @@ int infer_ir_graph_shape(ir_graph_t* graph)
     {
         ir_node_t* node = get_ir_graph_node(graph, i);
         ir_op_t* op = &node->op;
-
+	
+	//TLOG_DEBUG("%s %s %d ,%s\n",__FILE__,__FUNCTION__,__LINE__,node->name);
         if (node->input_num == 0)
             continue;
 
@@ -243,6 +244,7 @@ int infer_ir_graph_shape(ir_graph_t* graph)
 
         if (0 != op->same_shape)
         {
+	TLOG_DEBUG("same shape -----%s %s %d ,%s\n",__FILE__,__FUNCTION__,__LINE__,node->name);
             ir_tensor_t* input = get_ir_graph_tensor(graph, node->input_tensors[0]);
             ir_tensor_t* output = get_ir_graph_tensor(graph, node->output_tensors[0]);
 
@@ -253,6 +255,7 @@ int infer_ir_graph_shape(ir_graph_t* graph)
         }
         else
         {
+	//TLOG_DEBUG("not same need to infer %s %s %d ,%s\n",__FILE__,__FUNCTION__,__LINE__,node->name);
             if (0 != op->infer_shape(node))
             {
                 TLOG_ERR("Tengine FATAL: Infer node(id: %d, op: %s) shape failed.\n", node->index,

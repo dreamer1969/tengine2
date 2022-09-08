@@ -1,0 +1,1 @@
+/usr/bin/c++ -g CMakeFiles/tm_mobilefacenet_uint8.dir/tm_mobilefacenet_uint8.cpp.o CMakeFiles/tm_mobilefacenet_uint8.dir/common/tengine_operations.c.o -o tm_mobilefacenet_uint8  -Wl,-rpath,/data/dreamer/code/Tengine/build/source: ../source/libtengine-lite.so -lm -ldl -lm -lpthread 

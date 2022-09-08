@@ -499,6 +499,7 @@ int onnx_serializer::load_initializer_tensor(ir_graph_t* graph, const onnx::Grap
             }
             else if (onnx_tensor.data_type() == 6) // int32
             {
+	        fprintf(stdout,"line:%d function:%s--------------------int32-------------------------------\n tensor_name:%s\n",__LINE__,__FUNCTION__,name);
                 ir_tensor->data_type = TENGINE_DT_INT32;
                 int tensor_size = ir_tensor->elem_num * sizeof(int32_t);
                 ir_tensor->data = sys_malloc(tensor_size);
@@ -506,13 +507,18 @@ int onnx_serializer::load_initializer_tensor(ir_graph_t* graph, const onnx::Grap
                 int32_t* raw_data = (int32_t*)onnx_tensor.raw_data().data();
                 for (int j = 0; j < ir_tensor->elem_num; j++)
                 {
-                    mem_buf[j] = raw_data[j];
+		 if (name[0]=='c') // const tensor
+	       	{
+                   fprintf(stdout," %ld ",raw_data[j]);
+	       	}	
+		    mem_buf[j] = raw_data[j];
                 }
+                   fprintf(stdout," \n");
             }
             else if (onnx_tensor.data_type() == 7) // int64
             {
 		   // ir_tensor->data_type = TENGINE_DT_INT32;
-	        fprintf(stdout,"line:%d function:%s---------------------------------------------------\n tensor_name:%s\n",__LINE__,__FUNCTION__,name);
+	        fprintf(stdout,"line:%d function:%s-------------------------int64--------------------------\n tensor_name:%s\n",__LINE__,__FUNCTION__,name);
                 int tensor_size = ir_tensor->elem_num * sizeof(int64_t);
                 ir_tensor->data = sys_malloc(tensor_size);
                 int64_t* mem_buf = (int64_t*)ir_tensor->data;
@@ -676,10 +682,6 @@ int onnx_serializer::load_graph_node(ir_graph_t* graph, const onnx::GraphProto& 
             return -1;
         }
         /* set ir node io */
-        if(op_name=="Slice")	
-        {
-        	fprintf(stdout,"node_name:%s \n",node_name.c_str());
-        }
         for (int j = 0; j < onnx_node.input_size(); j++)
         {
            const std::string& input_name = onnx_node.input(j);
@@ -690,9 +692,11 @@ int onnx_serializer::load_graph_node(ir_graph_t* graph, const onnx::GraphProto& 
             int tensor_id = get_ir_tensor_index_from_name(graph, input_name.c_str());
             ir_tensor_t* tensor = get_ir_graph_tensor(graph, tensor_id);
             tensor_check[tensor->name] = tensor_check[tensor->name] + 1;
-            if(op_name=="Slice")	
-                fprintf(stdout,"node:%s->input_name:%s,tensor_name:%s\n",node_name.c_str(),input_name.c_str(),tensor->name);
             set_ir_node_input_tensor(ir_node, ir_node->input_num, tensor);
+            if(op_name=="Slice")	
+            {
+                 TLOG_DEBUG("002-%s %s %d ir_input_tensor_name:%s \n",__FILE__,__FUNCTION__,__LINE__,tensor->name);
+           } 
         }
 
         for (int j = 0; j < onnx_node.output_size(); j++)
@@ -896,7 +900,7 @@ static int reduce2avgpool(ir_graph_t* graph)
 
 int onnx_serializer::optimize_graph(ir_graph_t* graph)
 {
-    set_log_level(LOG_EMERG);
+    set_log_level(LOG_DEBUG);
     if (infer_ir_graph_shape(graph) < 0)
     {
         fprintf(stderr, "Skip internal optimize in onnx serializer.\n");
@@ -913,21 +917,28 @@ int onnx_serializer::optimize_graph(ir_graph_t* graph)
 
 int onnx_serializer::load_model(ir_graph_t* graph, std::string model_file)
 {
+    set_log_level(LOG_DEBUG);
     register_op_load();
     onnx::ModelProto model;
     if (load_model_file(model_file, model) < 0)
         return -1;
     const onnx::GraphProto& onnx_graph = model.graph();
+    TLOG_DEBUG("========================================================================================load initializer_tensor=================================\n");
     if (load_initializer_tensor(graph, onnx_graph) < 0)
         return -1;
+    TLOG_DEBUG("========================================================================================load constant tensor=================================\n");
     if (load_constant_tensor(graph, onnx_graph) < 0)
         return -1;
+    TLOG_DEBUG("========================================================================================set graph input=================================\n");
     if (set_graph_input(graph, onnx_graph) < 0)
         return -1;
+    TLOG_DEBUG("========================================================================================load graph node=================================\n");
     if (load_graph_node(graph, onnx_graph) < 0)
         return -1;
+    TLOG_DEBUG("========================================================================================set graph output=================================\n");
     if (set_graph_output(graph, onnx_graph) < 0)
         return -1;
+    TLOG_DEBUG("========================================================================================optimize graph=================================\n");
     if (optimize_graph(graph) < 0)
         return -1;
 

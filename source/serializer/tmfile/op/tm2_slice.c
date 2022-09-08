@@ -43,6 +43,7 @@ static int slice_op_map(int op)
 static int tm2_load_slice(struct graph* ir_graph, struct node* ir_node, const TM2_Node* tm_node,
                           const TM2_Operator* tm_op)
 {
+    TLOG_DEBUG("--%s---%s@%d \n",__FILE__,__FUNCTION__,__LINE__);
     struct slice_param* slice_param = (struct slice_param*)ir_node->op.param_mem;
     const struct tm2_priv* tm2_priv = (struct tm2_priv*)ir_graph->serializer_privacy;
     const char* mem_base = tm2_priv->base;

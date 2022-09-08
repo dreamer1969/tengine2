@@ -1,0 +1,1 @@
+/usr/bin/cc -g CMakeFiles/tm_classification.dir/tm_classification.c.o CMakeFiles/tm_classification.dir/common/tengine_operations.c.o -o tm_classification  -Wl,-rpath,/data/dreamer/code/Tengine/build/source: ../source/libtengine-lite.so -lm -ldl -lm -lpthread 

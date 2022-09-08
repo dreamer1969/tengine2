@@ -235,7 +235,7 @@ static int onnx_run(const int8_t* in_data, int8_t** out_data, int element_size, 
 
     // const int begins = param->begin;
     // const int end = param->end;
-
+    TLOG_DEBUG("%s %s %d start to onnx run \n",__FILE__,__FUNCTION__,__LINE__);
     if (param->dim_num == 4)
     {
         const int* in_dim_new = param->in_shape;
@@ -363,7 +363,7 @@ static int onnx_run(const int8_t* in_data, int8_t** out_data, int element_size, 
         int stop_4 = (param->axis == 4) ? (param->end > 0 ? param->end : param->in_shape[4] + param->end) : param->in_shape[4];
 
 
-        fprintf(stdout, " slice step is -> %d \n", param->step);
+        TLOG_DEBUG("slice step is -> %d \n", param->step);
         if (param->step > 1)
         {
             int step_0 = (param->axis == 0) ? param->step : 1;
@@ -454,6 +454,7 @@ static int run(struct node_ops* node_ops, struct exec_node* exec_node, struct ex
         return -1;
     }
 
+    TLOG_DEBUG("%s %s %d\n",__FILE__,__FUNCTION__,__LINE__);
     op_param.axis = _param->axis;
     op_param.output_shape = sd;
     op_param.out_num = out_num;
@@ -513,6 +514,16 @@ static int run(struct node_ops* node_ops, struct exec_node* exec_node, struct ex
         out_data_ptrs[0] = (int8_t*)out_tensor->data;
 
         // check the dim of input&output
+
+
+	
+        TLOG_DEBUG("%s %s %d input_tensor->dim_num:%d\n",__FILE__,__FUNCTION__,__LINE__,input_tensor->dim_num);
+	
+
+	for(int i = 0;i<input_tensor->dim_num;i++)
+	{
+            TLOG_DEBUG("%s %s %d input_output dim[%d]:%d|%d  \n",__FILE__,__FUNCTION__,__LINE__,i,input_tensor->dims[i], out_tensor->dims[i]);
+	}
 
         if (input_tensor->dim_num == 2)
         {
@@ -577,6 +588,7 @@ static int run(struct node_ops* node_ops, struct exec_node* exec_node, struct ex
         out_data_ptrs[0] = (int8_t*)out_tensor->data;
     }
 
+    TLOG_DEBUG("%s %s %d num:%d\n",__FILE__,__FUNCTION__,__LINE__,input_tensor->dim_num);
     int ret = -1;
     if (input_tensor->data_type == TENGINE_DT_FP32)
         ret = ref_slice_common(input, out_data_ptrs, sizeof(float), &op_param);

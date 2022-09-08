@@ -1,0 +1,1 @@
+/usr/bin/c++ -g CMakeFiles/tm_landmark.dir/tm_landmark.cpp.o CMakeFiles/tm_landmark.dir/common/tengine_operations.c.o -o tm_landmark  -Wl,-rpath,/data/dreamer/code/Tengine/build/source: ../source/libtengine-lite.so -lm -ldl -lm -lpthread 

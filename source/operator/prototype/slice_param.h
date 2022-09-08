@@ -36,10 +36,10 @@ typedef struct slice_param
    // int axis;
    // int step;
    
-    int64_t begin;
-    int64_t end;
-    int64_t axis;
-    int64_t step;
+    int32_t begin;
+    int32_t end;
+    int32_t axis;
+    int32_t step;
     
     int ismxnet;
     int iscaffe;
