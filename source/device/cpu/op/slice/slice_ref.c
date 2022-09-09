@@ -51,8 +51,15 @@ struct slice_param_ref
     int in_shape[4]; // the dim of the input
     int in_shape_3[3];
     int in_shape_2[2];
-    int in_shape_5[5];
+    // for dims==5 
 
+    struct tensor* input_tensor;
+    struct tensor* starts;
+    struct tensor* ends ;
+    struct tensor* axiss;
+
+    int in_shape_5[5];
+    // for dims==5 
     struct shape_dim* output_shape; // out shape
     int out_num;
     int dim_num;
@@ -350,6 +357,16 @@ static int onnx_run(const int8_t* in_data, int8_t** out_data, int element_size, 
         int in_dim_3 = in_dim_new[3];
         int in_dim_4 = in_dim_new[4];
 
+	struct tensor* starts = param->starts;
+        struct tensor* ends = param->ends;
+
+
+
+
+
+
+
+
         int start_0 = (param->axis == 0) ? param->begin : 0;
         int start_1 = (param->axis == 1) ? param->begin : 0;
         int start_2 = (param->axis == 2) ? param->begin : 0;
@@ -361,9 +378,22 @@ static int onnx_run(const int8_t* in_data, int8_t** out_data, int element_size, 
         int stop_2 = (param->axis == 2) ? (param->end > 0 ? param->end : param->in_shape[2] + param->end) : param->in_shape[2];
         int stop_3 = (param->axis == 3) ? (param->end > 0 ? param->end : param->in_shape[3] + param->end) : param->in_shape[3];
         int stop_4 = (param->axis == 4) ? (param->end > 0 ? param->end : param->in_shape[4] + param->end) : param->in_shape[4];
+	
+	
+	start_0 = *(starts->i32); 
+	start_1 = *(starts->i32 +1); 
+	start_2 = *(starts->i32+2); 
+	start_3 = *(starts->i32+3); 
+	start_4 = *(starts->i32+4); 
 
+	stop_0 = *(ends->i32+0);
+	stop_1 = *(ends->i32+1);
+	stop_2 = *(ends->i32+2);
+	stop_3 = *(ends->i32+3);
+	stop_4 = *(ends->i32+4);
+		
 
-        TLOG_DEBUG("slice step is -> %d \n", param->step);
+        TLOG_DEBUG("002-1 %s %s %d %dslice step is -> %d \n", __FILE__,__FUNCTION__,__LINE__,param->step);
         if (param->step > 1)
         {
             int step_0 = (param->axis == 0) ? param->step : 1;
@@ -438,11 +468,15 @@ static int release_node(struct node_ops* node_ops, struct exec_node* exec_node, 
 
 static int run(struct node_ops* node_ops, struct exec_node* exec_node, struct exec_graph* exec_graph)
 {
+    struct slice_param_ref op_param;
     struct node* ir_node = exec_node->ir_node;
     struct graph* ir_graph = ir_node->graph;
     struct tensor* input_tensor = get_ir_graph_tensor(ir_graph, ir_node->input_tensors[0]);
+    op_param.starts = get_ir_graph_tensor(ir_graph, ir_node->input_tensors[1]);
+    op_param.ends = get_ir_graph_tensor(ir_graph, ir_node->input_tensors[2]);
+    op_param.axiss = get_ir_graph_tensor(ir_graph, ir_node->input_tensors[3]);
+    
     struct tensor* output_tensor = get_ir_graph_tensor(ir_graph, ir_node->output_tensors[0]);
-    struct slice_param_ref op_param;
     slice_param_t* _param = (struct slice_param*)(ir_node->op.param_mem);
 
     int out_num = exec_node->output_num;

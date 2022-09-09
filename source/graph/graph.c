@@ -219,7 +219,7 @@ int infer_ir_graph_shape(ir_graph_t* graph)
         ir_node_t* node = get_ir_graph_node(graph, i);
         ir_op_t* op = &node->op;
 	
-	//TLOG_DEBUG("%s %s %d ,%s\n",__FILE__,__FUNCTION__,__LINE__,node->name);
+	TLOG_DEBUG("%s %s %d ,%d:%s\n",__FILE__,__FUNCTION__,__LINE__,i,node->name);
         if (node->input_num == 0)
             continue;
 

@@ -36,7 +36,12 @@
 static int infer_shape(ir_node_t* node)
 {
     ir_graph_t* ir_graph = node->graph;
+
     ir_tensor_t* input = get_ir_graph_tensor(ir_graph, node->input_tensors[0]);
+    ir_tensor_t* starts = get_ir_graph_tensor(ir_graph, node->input_tensors[1]);
+    ir_tensor_t* ends = get_ir_graph_tensor(ir_graph, node->input_tensors[2]);
+    ir_tensor_t* axes = get_ir_graph_tensor(ir_graph, node->input_tensors[3]);
+
     struct slice_param* slice_param = (struct slice_param*)(node->op.param_mem);
     int dims_len = input->dim_num;
     int dims_in[TE_MAX_SHAPE_DIM_NUM * 2];
@@ -118,42 +123,45 @@ static int infer_shape(ir_node_t* node)
         int axis = slice_param->axis;
         int dim_len = input->dim_num;
         int out_dims[TE_MAX_SHAPE_DIM_NUM * 2];
-        for (int i = 0; i < dim_len; i++)
-        {
-            TLOG_DEBUG("%s %s %d i:%d axis:%d \n",__FILE__,__FUNCTION__,__LINE__,i,axis);
-            if (i == axis)
-            {
-                int slice_end = slice_param->end;
-                if (slice_param->end > dims_in[i])
-                {
-                    slice_end = dims_in[i];
-                    slice_param->end = slice_end;
-                }
-                if (slice_end > 0)
-                {
-                    out_dims[i] = slice_end - slice_param->begin;
-                    if (slice_param->step > 1)
-                    {
-                        out_dims[i] = (out_dims[i] - 1) / slice_param->step + 1;
-                    }
-                }
-                else
-                {
-                    out_dims[i] = dims_in[i] + (slice_end - slice_param->begin);
-                    if (slice_param->step > 1)
-                    {
-                        out_dims[i] = (out_dims[i] - 1) / slice_param->step + 1;
-                    }
-                }
-                if (0 == out_dims[i])
-                    out_dims[i] = dims_in[i];
-            }
-            else
-            {
-                out_dims[i] = dims_in[i];
-            }
-        }
-        set_ir_tensor_shape(get_ir_graph_tensor(ir_graph, node->output_tensors[0]), out_dims, dim_len);
+    //    for (int i = 0; i < dim_len; i++)
+    //    {
+    //        TLOG_DEBUG("%s %s %d i:%d axis:%d \n",__FILE__,__FUNCTION__,__LINE__,i,axis);
+    //        if (i == axis)
+    //        {
+    //            int slice_end = slice_param->end;
+    //            if (slice_param->end > dims_in[i])
+    //            {
+    //                slice_end = dims_in[i];
+    //                slice_param->end = slice_end;
+    //            }
+    //            if (slice_end > 0)
+    //            {
+    //                out_dims[i] = slice_end - slice_param->begin;
+    //                if (slice_param->step > 1)
+    //                {
+    //                    out_dims[i] = (out_dims[i] - 1) / slice_param->step + 1;
+    //                }
+    //            }
+    //            else
+    //            {
+    //                out_dims[i] = dims_in[i] + (slice_end - slice_param->begin);
+    //                if (slice_param->step > 1)
+    //                {
+    //                    out_dims[i] = (out_dims[i] - 1) / slice_param->step + 1;
+    //                }
+    //            }
+    //            if (0 == out_dims[i])
+    //                out_dims[i] = dims_in[i];
+    //        }
+    //        else
+    //        {
+    //            out_dims[i] = dims_in[i];
+    //        }
+    //    }
+	int key_axis = 4;
+	dims_in[4] = *(ends->i32+key_axis) - *(starts->i32+key_axis);
+        set_ir_tensor_shape(get_ir_graph_tensor(ir_graph, node->output_tensors[0]), dims_in, dim_len);
+        //set_ir_tensor_shape(get_ir_graph_tensor(ir_graph, node->output_tensors[0]), out_dims, dim_len);
     }
     else
     {
